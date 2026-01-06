@@ -54,3 +54,37 @@ app.post('/addmall', async (req, res) => {
   }
 });
 
+// Update an existing mall
+app.put('/malls/:id', async (req, res) => {
+  const { mall_name, mall_location } = req.body;
+  const { id } = req.params; // mall id in the URL
+
+  try {
+    let connection = await mysql.createConnection(dbConfig);
+    await connection.execute(
+      'UPDATE malls SET mall_name = ?, mall_location = ? WHERE id = ?',
+      [mall_name, mall_location, id]
+    );
+    res.status(200).json({ message: 'Mall ' + id + ' updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error - could not update mall' + id });
+  }
+});
+
+// Delete a mall
+app.delete('/malls/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    let connection = await mysql.createConnection(dbConfig);
+    await connection.execute(
+      'DELETE FROM malls WHERE id = ?',
+      [id]
+    );
+    res.status(200).json({ message: 'Mall ' + id + ' deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error - could not delete mall ' + id });
+  }
+});
